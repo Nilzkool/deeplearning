@@ -437,7 +437,7 @@ def NN_model_predictions(weights,X,act_hl, act_fl,regularization):
     #       act_fl (refer function NN_model),
     #       regularization(refer function NN_model)
     #Output: Prediction matrix Y_hat (shape (1,m))
-    
+    regularization=None
     cache=forward_prop(weights,X,act_hl, act_fl,regularization)
     Y_hat=cache['final activation']
     Y_hat[Y_hat>0.5]=1
