@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Feb  3 10:56:24 2018
-
-@author: u0113548
-"""
-# IMPORTANT: NN library for binary classification problems 
+# NN library for binary classification problems 
 import numpy as np
 import matplotlib.pyplot as plt
 #%% A function to initialize parameters
@@ -518,23 +512,23 @@ def update_weights_adam(weights,grads,learn_rate, t,v,s,beta1,beta2):
 #%% Final model
 def NN_model(X,Y,hidden_layer_dims,no_epochs,batch_size,learn_rate,act_hl, act_fl,regularization=None,optimization=None):
     ## Description: This is entire NN model
-        # Inputs:
-        # (1) X_train_std (training matrix of shape (n_x,m) where n_x is the no of input features and m is no of examples)
-        # (2) Y_train (labels or ground truth of shape (1,m)), make sure labels are int values 
-        # (3) hidden_layer_dims ( a list of layer sizes of hidden layers e.g [3,1] means it is a 3 layer NN (L=3) with 3 units in 1st layer, 
-        #     1 unit in 2nd layer. The no of units in the final layer is the no of classes k.The no of units in the 0th or input layer 
-        #     is n_x=X.shape[0]
-        # (4) no_itns (no of iterations)
-        # (5) batch size (a recommended size is a any power of 2)
-        # (5) learn_rate (the learning rate or step size of gradient descent)
-        # (5) act_hl (activation type in hidden layer, choices:'relu','sigmoid' or 'tanh'),
-        # (6) act_fl (activation type in final layer, choices:'relu','sigmoid' or 'tanh'),
-        # (7) regularization (It is either None meaning no regularization, {'L2': lambd} in case of L2 regularization or
-        #     {'dropout':[..keep_prob_l..]} where l is a hidden layer that starts at 1 to L-2 and where keep_prob is probability 
-        #     of keeping a unit in layer l. By default keep_prob is set for the final layer
-        # (8) optimization (choices are 0-Gradient descent (GD), 1-GD with momentum, 2-Adam optimization)
-        #     should be formatted as optimization=0 for GD (also default), {'momentum':beta1},  {'Adam':[beta1,beta2]}
-            # Determine no of classes
+    # Inputs:
+    # (1) X_train_std (training matrix of shape (n_x,m) where n_x is the no of input features and m is no of examples)
+    # (2) Y_train (labels or ground truth of shape (1,m)), make sure labels are int values 
+    # (3) hidden_layer_dims ( a list of layer sizes of hidden layers e.g [3,1] means it is a 3 layer NN (L=3) with 3 units in 1st layer, 
+    #     1 unit in 2nd layer. The no of units in the final layer is the no of classes k.The no of units in the 0th or input layer 
+    #     is n_x=X.shape[0]
+    # (4) no_itns (no of iterations)
+    # (5) batch size (a recommended size is a any power of 2)
+    # (6) learn_rate (the learning rate or step size of gradient descent)
+    # (7) act_hl (activation type in hidden layer, choices:'relu','sigmoid' or 'tanh'),
+    # (8) act_fl (activation type in final layer, choices:'relu','sigmoid' or 'tanh'),
+    # (7) regularization (It is either None meaning no regularization, {'L2': lambd} in case of L2 regularization or
+    #     {'dropout':[..keep_prob_l..]} where l is a hidden layer that starts at 1 to L-2 and where keep_prob is probability 
+    #     of keeping a unit in layer l. By default keep_prob is set for the final layer
+    # (9) optimization (choices are 0-Gradient descent (GD), 1-GD with momentum, 2-Adam optimization)
+    #     should be formatted as optimization=0 for GD (also default), {'momentum':beta1},  {'Adam':[beta1,beta2]}
+    #     Determine no of classes
     
     # Output: optimized weights, cost (optional)
     
@@ -546,7 +540,6 @@ def NN_model(X,Y,hidden_layer_dims,no_epochs,batch_size,learn_rate,act_hl, act_f
     
     # one hot encoding for more than one class for more than two classes
     if n_k>2: 
-        layer_dims.append(n_k)
         Y=np.repeat(Y, n_k,axis=0)
         Y=Y==np.arange(0,n_k).reshape(n_k,1)
     else:
