@@ -51,8 +51,8 @@ X_test_std=X_test/16
 # (1) X_train_std (training matrix of shape (n_x,m) where n_x is the no of input features and m is no of examples)
 # (2) Y_train (labels or ground truth of shape (1,m)), make sure labels are int values 
 # (3) hidden_layer_dims ( a list of layer sizes of hidden layers e.g [3,1] means it is a 3 layer NN (L=3) with 3 units in 1st layer, 
-#     1 unit in 2nd layer. The no of units in the final layer is the no of classes k.The no of units in the 0th or input layer 
-#     is n_x=X.shape[0]
+#     1 unit in 2nd layer. The no of units in the final layer (n_k) is the no of classes k.The no of units in the 0th or input layer 
+#     is n_x=X.shape[0]. n_x and n_k are deetermined automatically
 # (4) no_itns (no of iterations)
 # (5) batch size (a recommended size is a any power of 2)
 # (6) learn_rate (the learning rate or step size of gradient descent)
@@ -66,8 +66,8 @@ X_test_std=X_test/16
 #     Determine no of classes
 
 # hidden layer dimensions
-hidden_layer_dims=[5] 
-regu_para=None
+hidden_layer_dims=[5,3] 
+
 
 # Optimizations
 optim=0
@@ -77,7 +77,7 @@ optim=0
 # Regularizations
 regu_para=None
 #regu_para={'L2':0.1}
-#regu_para={'dropout':[1,0.8,0.8]}
+#regu_para={'dropout':[1,0.8]}
 
 
 final_weights,_=L_layer_NN.NN_model(X_train_std,Y_train,hidden_layer_dims,no_epochs=1000,
