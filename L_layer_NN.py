@@ -1,3 +1,4 @@
+# L_layer_NN library (V1.1)
 # NN library for binary classification problems 
 import numpy as np
 import matplotlib.pyplot as plt
