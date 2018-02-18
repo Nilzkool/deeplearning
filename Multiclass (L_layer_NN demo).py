@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Feb  3 14:09:01 2018
 
-@author: u0113548
-"""
 
 ## Scrip to demonstrate L_layer_NN (Version 1.1) with a toy dataset for multiclass problem
 # IMPORTANT: First download the library L_layer_NN 
