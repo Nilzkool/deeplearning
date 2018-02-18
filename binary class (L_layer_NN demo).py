@@ -54,7 +54,7 @@ n_x=X_train.shape[0]
 
 
 # hidden layer dimensions
-hidden_layer_dims=[3,2] # ideal config 
+hidden_layer_dims=[3,2] 
 
 
 # Optimizations
