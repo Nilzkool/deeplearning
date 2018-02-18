@@ -1,5 +1,5 @@
 
-## Scrip to demonstrate L_layer_NN (Version 1.1) with a toy dataset for a binary class problem
+## Scrip to demonstrate L_layer_NN (Version 1.1) with a toy dataset for a binary class problem 
 # IMPORTANT: First download the library L_layer_NN 
 
 #%% Import libraries
