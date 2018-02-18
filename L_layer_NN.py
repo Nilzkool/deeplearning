@@ -9,12 +9,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 #%% A function to initialize parameters
 def initialize_weights(layer_dims):
-    # Description: A xavier He implementation of random initialization of weights
-    # Input: layer_dims 
+    # Description: A xavier implementation of random initialization of weights
+    # Input: (1) layer_dims (dimensions of each layer of NN)
     # Output: a dict containg initial values of all parameters formatted for evry layer l as
     #         {...,{layerl:{'Wl':Wl, 'bl':bl},...}
     
-    L=len(layer_dims) # all layers including input and output layers
+    L=len(layer_dims) # all layers of NN including input and output layers
     
     init_weights={}
     for l in range (1,L):
@@ -29,9 +29,9 @@ def initialize_weights(layer_dims):
     
 def activation(z,act_name):
     # Description: A function to compute activations for any layer l
-    # Input: z (the linear feedforward part or np.dot(Wl,A_prev)+b_l), 
-    #         act_name ('relu', 'sigmoid' or 'tanh')
-    # Output: activations Al 
+    # Input: (1) z (the linear feedforward part or np.dot(Wl,A_prev)+b_l), 
+    #        (2) act_name (activation type, choices are "relu", "sigmoid" or "tanh")
+    # Output: activations Al in layer l 
     
     if act_name=="relu":
        z_copy=z.copy()
@@ -47,10 +47,10 @@ def activation(z,act_name):
     return g
         
 def activation_prime(z,act_name):
-    # Description: A function to compute activations for any layer l
-    # Input: z (or zl cached during forward prop) ,
-    #         act_name ('relu', 'sigmoid' or 'tanh')
-    # Output: derivatives of the activation functions
+    # Description: A function to compute derivative of activation functions for any layer l
+    # Input: (1) z (or zl cached during forward prop)
+    #        (2) act_name (activation type, choices are "relu", "sigmoid" or "tanh")
+    # Output: g_prime (derivatives of the activation function) 
     if act_name=="relu":
        z_copy=z.copy()
        z_copy[z_copy<=0]=0
@@ -69,16 +69,16 @@ def activation_prime(z,act_name):
 #%% Forward propagation
 def forward_prop(weights,X_inp,act_hl, act_fl,regularization):
     #Descrption: Implementation of forward propagation
-    #Input: weights (refer the format in the function initialize_weights), 
-    #       X_inp (refer function NN_model),
-    #       act_hl (refer function NN_model)
-    #       act_fl (refer function NN_model), 
-    #       regularization (refer function NN_model)
+    #Input: (1) weights (refer the format in the function initialize_weights), 
+    #       (2) X (taining matrix X or a mini batch of training matrix X),
+    #       (3) act_hl (hidden layer activation type, refer function NN_model)
+    #       (4) act_fl (final layer activation, refer function NN_model), 
+    #       (5) regularization (refer function NN_model)
     
-    #Output:a nested dictionary of cached values for each layer l and final activation value
-    #       formatted for every layer l as {..,{layerl:{'A':A_prev, 'Wl': Wl, 'bl': bl, 'Zl':Zl},..}}
+    #Output:a nested dictionary called "cache", which contains cached values for each layer l and final activation value.
+    #       It is formatted as every layer l as {..,{layerl:{'A':A_prev, 'Wl': Wl, 'bl': bl, 'Zl':Zl},..'final_activation':AL}}
     #       where A_prev are the activations of the previous layer, Wl, bl and Zl are layer weights and linear
-    #       forward parameters
+    #       forward parameters. It also contains the final activation value AL.
     
     if regularization is not None:
         if list(regularization.keys())[0]=="dropout":
@@ -115,9 +115,7 @@ def forward_prop(weights,X_inp,act_hl, act_fl,regularization):
             A_prev=A_prev/keep_prob
             cache['layer'+str(l)]['D'+str(l)]=D_l
         
-#    if A_prev==0:
-#    elif:
-#      A_prev==0
+
     cache['final activation']=A_prev
      
     return cache
@@ -126,28 +124,29 @@ def forward_prop(weights,X_inp,act_hl, act_fl,regularization):
     
 def log_loss(Y,Y_hat):
     #Descrption: Log loss
-    #Input: Y (refer function NN model)
-    #       Y_hat (final activations)
+    #Input: (1) Y (refer function NN model)
+    #       (2) Y_hat (final activations)
     #       
-    #Output:log loss
+    #Output: log loss
     
-    L=-(Y*np.log(Y_hat)+(1-Y)*np.log(1-Y_hat))
+    L=-(Y*np.log(Y_hat+10e-8)+(1-Y)*np.log(1-Y_hat+10e-8))
     return L
 
 def calc_cost(Y,Y_hat):
     #Descrption: Cost calculation
-    #Input: Y (refer function NN model)
-    #       Y_hat (final activations)
+    #Input: (1) Y (refer function NN model)
+    #       (2) Y_hat (final activations)
+    #        n_k (no of classes, for binary classification n_k is taken as one)
     m=Y.shape[1]
-    J=(1/m)*np.sum(log_loss(Y,Y_hat))
+    J=(1/(m))*np.sum(log_loss(Y,Y_hat))
     return J
 
 def calc_frobenius_norm_of_weights(weights,lambd,m):
     #Descrption: Calculate frobenius norm for L2 regularization
-    #Input: weights (refer function intialize_weights), 
-    #       lambd (L2 regularization),
-    #       m (no of training examples)
-    #       Y_hat (final activations)
+    #Input: (1) weights (refer function intialize_weights), 
+    #       (2) lambd (L2 regularization),
+    #       (3) m (no of training examples)
+    #       (4) Y_hat (final activations)
     #Output: frobenius norm
     
     sq_sum=0
@@ -162,9 +161,9 @@ def calc_frobenius_norm_of_weights(weights,lambd,m):
 #%% Back propagation
 def back_prop(Y,cache,act_hl, act_fl,regularization):
     #Description: Implementation of backward propagation
-    #Input: Y (refer function NN_model), 
-    #       cache (refer function forward_prop )
-    #       act_hl (refer function NN_model)
+    #Input: (1) Y (refer function NN_model), 
+    #       (2) cache (refer function forward_prop )
+    #       (3) act_hl (refer function NN_model)
     #       act_fl (refer function NN_model), 
     #       regularization (refer  function NN_model)
     #Output: a dictionary grads formatted as for every layer l
@@ -182,7 +181,7 @@ def back_prop(Y,cache,act_hl, act_fl,regularization):
     A_fl=cache['final activation']
     m=Y.shape[1]
     L=len(cache) 
-    dA_fl=-(np.divide(Y,A_fl)-np.divide(1-Y,1-A_fl))
+    dA_fl=-(np.divide(Y,A_fl+10e-8)-np.divide(1-Y,1-A_fl+10e-8))
     
     dA_l=dA_fl
     grads={}
@@ -221,32 +220,26 @@ def back_prop(Y,cache,act_hl, act_fl,regularization):
     return grads
 
 #%% Update parameters using grad descent
-def update_parameters(weights,grads,learn_rate):
+def update_weights(weights,grads,learn_rate, ):
     #Description: Weight updation
-    #Input: weights (refer format at function initialize_weights), 
-    #       grads (refer format at function back_prop)
-    #       learning rate or alpha
-    #Output: updated weights in the same format as weights
+    #Input: (1) weights (refer format at function initialize_weights), 
+    #       (2) grads (refer format at function back_prop)
+    #       (3) learning rate or alpha
+    #Output: updated weights in the same format as weights (refer function initialize_weights)
     L=len(weights)+1
     for l in range(1,L):
         weights_l=weights['layer'+str(l)]
         grads_l=grads['layer'+str(l)]
-        W_l=weights_l['W'+str(l)]
-        b_l=weights_l['b'+str(l)]
-        dW_l=grads_l['dW'+str(l)]
-        db_l=grads_l['db'+str(l)]
-        W_l=W_l-learn_rate*dW_l
-        b_l=b_l-learn_rate*db_l
-        weights['layer'+str(l)]={'W'+str(l):W_l,'b'+str(l):b_l}
-    
+        weights_l['W'+str(l)]=weights_l['W'+str(l)]-learn_rate*grads_l['dW'+str(l)]
+        weights_l['b'+str(l)]=weights_l['b'+str(l)]-learn_rate*grads_l['db'+str(l)]
     return weights
 
 
 #%% Functions to convert dictionary of parameters into a column vector required for gradient checking
 def unroll_into_column(params,identifier):
     #Description: A function to unroll the parameters in to a column vector required during gradient checking
-    #Inputs: Dictionary of weights or gradients,
-    #        identifier="weights" if params passed is weights 
+    #Inputs: (1) Dictionary of weights or gradients,
+    #        (2) identifier="weights" if params passed is weights 
     #Output: A column vector of weights
     
     L= len(params)+1 #Total layers
@@ -272,8 +265,8 @@ def unroll_into_column(params,identifier):
     
 def roll_into_dict(theta_pm,weights_orig,identifier):
     #Description: A function to roll back weights vector to a dictionary required for gradient checking
-    #Inputs: theta_pm (a column vector of weights),
-    #        identifier="weights" if params passed is weights  (not required anymore)
+    #Inputs: (1) theta_pm (a column vector of weights),
+    #        (2) identifier="weights" if params passed is weights  (not required anymore)
     #Output: weights (refer format at the function intialize_weights)
     if identifier =="weights":
         pre_str=""
@@ -307,15 +300,25 @@ def roll_into_dict(theta_pm,weights_orig,identifier):
 #%% A function to check the gradients numerically
 def check_gradients(weights,X,Y,act_hl,act_fl,epsilon,regularization):
     #Description: A function to validate gradients from back prop against numerically computed gradients
-    #Inputs: weights (refer format at function initialize_weights)
-    #        X (refer function NN_model),
-    #        Y (refer function NN_model),
-    #        act_hl (refer function NN model)
-    #        act_fl (refer function NN model)
-    #        epsilon (step value, recommended 10e-7)
-    #        regularization (refer function NN model)
+    #Inputs: (1) weights (refer format at function initialize_weights),
+    #        (2) X (refer function NN_model),
+    #        (3) Y (refer function NN_model),
+    #        (4) act_hl (refer function NN model)
+    #        (5) act_fl (refer function NN model)
+    #        (6) epsilon (step value, recommended 10e-7)
+    #        (7) regularization (refer function NN model)
     #Output: A string indicating if gradients are ok or not
            
+      # Determine no of classes
+    classes=list(set(Y[0,:]))
+    n_k=len(classes)
+
+    # one hot encoding for more than one class for more than two classes
+    if n_k>2: 
+        Y=np.repeat(Y, n_k,axis=0)
+        Y=Y==np.arange(0,n_k).reshape(n_k,1)
+    else:
+        n_k=1
     
     cache=forward_prop(weights,X,act_hl, act_fl,regularization)
     grads=back_prop(Y,cache,act_hl, act_fl,regularization)
@@ -359,21 +362,198 @@ def check_gradients(weights,X,Y,act_hl,act_fl,epsilon,regularization):
     else:
         print("Gradients are not OK, relative difference =",str(rel_diff))
         
+#%% Create mini batches   
+def create_batches(X,Y,batch_size):
+    #Description: A function to create mini batches
+    #Inputs: (1) X (Input training matrix, refer function NN_model)
+    #        (2) Y (Input labels, refere function NN_model)
+    #        (3) batch_size (an integer specifying the batch size)
+    # Output: batches (a list containing all mini batches)      
+    
+    m = X.shape[1]                  
+    batches = []
+        
+    # Shuffle (X, Y)
+    permutation = list(np.random.permutation(m))
+    shuffled_X = X[:, permutation]
+    shuffled_Y = Y[:, permutation]
+    
+    num_complete_batches = int(np.floor(m/batch_size))
+    
+    # Get the mini batchs
+    for k in range(0, num_complete_batches):
+        batch_X = shuffled_X[:, k*batch_size : (k+1)*batch_size]
+        batch_Y = shuffled_Y[:, k*batch_size : (k+1)*batch_size]
+        batch = (batch_X, batch_Y)
+        batches.append(batch)
+    
+    # Handle left over batch
+    if m % batch_size != 0:
+        batch_X = shuffled_X[:, num_complete_batches* batch_size:]
+        batch_Y = shuffled_Y[:, num_complete_batches* batch_size:]
+        batch = (batch_X, batch_Y)
+        batches.append(batch)
+    
+    return batches
+
+#%% Generate layer dims
+def generate_layer_dims(n_x,hidden_layer_dims,n_k):
+    #Description:  Creates the dimensions of each layer of the NN
+    #Inputs: (1) n_x (no of features of the input train matrix X)
+    #        (2) hidden_layers (refer function NN_model)
+    #        (3) n_k (no of classes)
+    #Output: a list if dimensions for each layer in the NN
+    layer_dims=[n_x]+hidden_layer_dims
+    if n_k>2: # no of classes more than 2
+        layer_dims.append(n_k)
+    else:
+        layer_dims.append(1)
+        n_k=1
+    
+    return layer_dims
+
+#%% Initialize momentum parameters
+def initialize_momentum(weights):
+    #Description:  Initializes the momentum values
+    #Inputs: (1) weights (refer function initialize weights)
+    #Output: Zero initialized momentum values in the same format as weights
+
+    L = len(weights) +1 
+    v = {}
+
+    for l in range(1,L):
+        layer_weights=weights['layer'+str(l)]
+        v_dW_l = np.zeros_like(layer_weights["W" + str(l)])
+        v_db_l = np.zeros_like(layer_weights["b" + str(l)])
+        v['layer'+str(l)]={"v_dw"+str(l):v_dW_l,"v_db"+str(l):v_db_l}
+    return v
+
+#%% Initialize adam parameters
+def initialize_adam(weights):
+    #Description:  Initializes adam values
+    #Inputs: (1) weights (refer function initialize weights)
+    #Output: Zero initialized  momentum (v) and and RMS prop (s) in the same format as weights
+    L = len(weights) +1 
+    v = {}
+    s={}
+
+    for l in range(1,L):
+        layer_weights=weights['layer'+str(l)]
+        v_dW_l = np.zeros_like(layer_weights["W" + str(l)])
+        v_db_l = np.zeros_like(layer_weights["b" + str(l)])
+        s_dW_l = np.zeros_like(layer_weights["W" + str(l)])
+        s_db_l = np.zeros_like(layer_weights["b" + str(l)])
+        v['layer'+str(l)]={"v_dw"+str(l):v_dW_l,"v_db"+str(l):v_db_l}
+        s['layer'+str(l)]={"s_dw"+str(l):s_dW_l,"s_db"+str(l):s_db_l}
+    return v,s
+
+#%% Update weights with momentum
+def update_weights_momentum(weights,grads,learn_rate,v,beta1):
+    #Description:  Update weights using momentum formulation
+    #Inputs: (1) weights (refer function initialize weights)
+    #        (2) grads (gradients, refer function back_prop)
+    #        (3) learn_rate 
+    #        (4) current momentum value v (refer function initialize_momentum)
+    #        (5) momentum parameter beta1(exponential average over approx 1/(1-beta1) prev gradients or dW)
+    #Output: updated weights, updated momentum values
+    
+    L = len(weights) +1 
+    
+    for l in range(1,L):
+        # Unpack layer params
+        layer_v=v['layer'+str(l)]
+        layer_weights=weights['layer'+str(l)]
+        layer_grads=grads['layer'+str(l)]
+        
+        # Update momentum
+        layer_v["v_dw" + str(l)] = beta1*layer_v["v_dw" + str(l)]+(1-beta1)*layer_grads['dW' + str(l)]
+        layer_v["v_db" + str(l)] = beta1*layer_v["v_db" + str(l)]+(1-beta1)*layer_grads['db' + str(l)]
+        
+        # Update weights
+        layer_weights["W" + str(l)] = layer_weights['W' + str(l)]-learn_rate*layer_v["v_dw" + str(l)]
+        layer_weights["b" + str(l)] = layer_weights['b' + str(l)]-learn_rate*layer_v["v_db" + str(l)]
+        
+    return weights,v
+
+#%% update_weights_with adam
+def update_weights_adam(weights,grads,learn_rate, t,v,s,beta1,beta2):
+    #Description:  Update weights using adam formulation
+    #Inputs: (1) weights (refer function initialize weights)
+    #        (2) grads (gradients, refer function back_prop)
+    #        (3) learn_rate 
+    #        (4) t (current iteration number)
+    #        (5) current momentum value v (refer function initialize_momentum)
+    #        (6) current rms value (s)
+    #        (5) momentum parameter beta1
+    #        (6) rms prop parameter beta2 (exponential average over approx 1/(1-beta2) dW**2 values)
+    #Output: updated weights, updated v, updated s
+    
+    
+    L = len(weights) +1 
+    for l in range(1,L):
+        # Unpack layer params
+        layer_v=v['layer'+str(l)]
+        layer_s=s['layer'+str(l)]
+        layer_weights=weights['layer'+str(l)]
+        layer_grads=grads['layer'+str(l)]
+        
+        
+        # Update momentums and rms params
+        layer_v["v_dw" + str(l)] = beta1*layer_v["v_dw" + str(l)]+(1-beta1)*layer_grads['dW' + str(l)]
+        layer_v["v_db" + str(l)] = beta1*layer_v["v_db" + str(l)]+(1-beta1)*layer_grads['db' + str(l)]
+        layer_s["s_dw" + str(l)] = beta2*layer_s["s_dw" + str(l)]+(1-beta2)*np.square(layer_grads['dW' + str(l)])
+        layer_s["s_db" + str(l)] = beta2*layer_s["s_db" + str(l)]+(1-beta2)*np.square(layer_grads['db' + str(l)])
+        
+        # Apply corrections
+        v_dw_corr=layer_v["v_dw" + str(l)]/(1-beta1**t)
+        v_db_corr=layer_v["v_db" + str(l)]/(1-beta1**t)
+        s_dw_corr=layer_s["s_dw" + str(l)]/(1-beta2**t)
+        s_db_corr=layer_s["s_db" + str(l)]/(1-beta2**t)
+        
+        layer_weights["W" + str(l)] = layer_weights['W' + str(l)]-learn_rate*v_dw_corr/np.sqrt(s_dw_corr+10e-8)
+        layer_weights["b" + str(l)] = layer_weights['b' + str(l)]-learn_rate*v_db_corr/np.sqrt(s_db_corr+10e-8)
+        
+    return weights,v,s
+        
 #%% Final model
-def NN_model(X,Y,layer_dims,no_itns,learn_rate,act_hl, act_fl,regularization=None):
-    #Descrption: A function to optimize the weights of the NN
-    #Input: X (training matrix of shape (n_x,m) where n_x is the no of input features and m is no of examples) ,
-    #       Y (labels or ground truth of shape (1,m)) currently binary claasification only,
-    #       layer_dims ( a list of layer sizes e.g [3,4,3,1] means it is a 3 layer NN
-    #                   with 3 units in 0th layer (input layer), 4 units in 1st layer
-    #                   3 units in 2nd layer and 1 unit in 3rd and final layer),
-    #       act_hl (activation type in hidden layer, choices:'relu','sigmoid' or 'tanh'),
-    #       act_fl (activation type in final layer, choices:'relu','sigmoid' or 'tanh'),
-    #       regularization (It is either None meaning no regularization, 
-    #                         {'L2': lambd} in case of L2 regularization or
-    #                        {'dropout':[..keep_prob_l..]} where l is a hidden layer that starts at 1 to L-2
-    #                        and where keep_prob is probabily of keeping the unit, by default keep_prob is set to 1
-    #                        for the final layer
+def NN_model(X,Y,hidden_layer_dims,no_epochs,batch_size,learn_rate,act_hl, act_fl,regularization=None,optimization=None):
+    ## Description: This is entire NN model
+        # Inputs:
+        # (1) X_train_std (training matrix of shape (n_x,m) where n_x is the no of input features and m is no of examples)
+        # (2) Y_train (labels or ground truth of shape (1,m)), make sure labels are int values 
+        # (3) hidden_layer_dims ( a list of layer sizes of hidden layers e.g [3,1] means it is a 3 layer NN (L=3) with 3 units in 1st layer, 
+        #     1 unit in 2nd layer. The no of units in the final layer is the no of classes k.The no of units in the 0th or input layer 
+        #     is n_x=X.shape[0]
+        # (4) no_itns (no of iterations)
+        # (5) batch size (a recommended size is a any power of 2)
+        # (5) learn_rate (the learning rate or step size of gradient descent)
+        # (5) act_hl (activation type in hidden layer, choices:'relu','sigmoid' or 'tanh'),
+        # (6) act_fl (activation type in final layer, choices:'relu','sigmoid' or 'tanh'),
+        # (7) regularization (It is either None meaning no regularization, {'L2': lambd} in case of L2 regularization or
+        #     {'dropout':[..keep_prob_l..]} where l is a hidden layer that starts at 1 to L-2 and where keep_prob is probability 
+        #     of keeping a unit in layer l. By default keep_prob is set for the final layer
+        # (8) optimization (choices are 0-Gradient descent (GD), 1-GD with momentum, 2-Adam optimization)
+        #     should be formatted as optimization=0 for GD (also default), {'momentum':beta1},  {'Adam':[beta1,beta2]}
+            # Determine no of classes
+    
+    # Output: optimized weights, cost (optional)
+    
+    classes=list(set(Y[0,:]))
+    n_k=len(classes)
+    
+    # Determine the  dimsions of each layer of the NN
+    layer_dims=generate_layer_dims(X.shape[0],hidden_layer_dims,n_k)
+    
+    # one hot encoding for more than one class for more than two classes
+    if n_k>2: 
+        layer_dims.append(n_k)
+        Y=np.repeat(Y, n_k,axis=0)
+        Y=Y==np.arange(0,n_k).reshape(n_k,1)
+    else:
+        n_k=1
+        
+    # Initialize regularization    
+     
     if regularization==None:
         regu_type=None
     else:
@@ -389,44 +569,79 @@ def NN_model(X,Y,layer_dims,no_itns,learn_rate,act_hl, act_fl,regularization=Non
                 return False
 
     
-    itn_no=0
+    
+    # Initialize weights
     weights=initialize_weights(layer_dims)
     
+    # Intialize optimation
+    optim_type=None
+    if optimization!=None and optimization!=0:
+        optim_type=list(optimization.keys())[0]
+        if optim_type=='momentum':
+            v=initialize_momentum(weights)
+            beta1=optimization['momentum']
+        elif optim_type=='adam':
+            v,s=initialize_adam(weights)
+            betas=optimization['adam']
+            beta1=betas[0]
+            beta2=betas[1]
+            t_adam=1
+            
     cost_list=[]
-    itn_list=[]
-    while itn_no<=no_itns:
+    epoch_list=[]
+    
+    cur_epoch_no=0
+    while cur_epoch_no<=no_epochs:
+        batches_list=create_batches(X,Y,batch_size)
+        itn_no=0
         
-        #Forward prop
-        cache=forward_prop(weights,X,act_hl, act_fl,regularization)
-        
-        #Cost calculation
-        Y_hat=cache['final activation']
-        cost=calc_cost(Y,Y_hat)
-        
-        if regu_type=="L2":
-            cost=cost+calc_frobenius_norm_of_weights(weights,lambd,m=X.shape[1])
-        
-        #print(cost)
-        if itn_no % 100 == 0:
-            print("Cost after iteration {}: {}".format(itn_no, round(cost,3)))
-            cost_list.append(cost)
-            itn_list.append(itn_no // 100)
-        
-        #Back prop
-        grads=back_prop(Y,cache,act_hl, act_fl,regularization)
-        
-        #Update params
-        weights=update_parameters(weights,grads,learn_rate)
-        itn_no+=1
-        
+        for batch in batches_list:
+            # Unpack batch
+            batch_X=batch[0]
+            batch_Y=batch[1]
+            
+            #Forward prop
+            cache=forward_prop(weights,batch_X,act_hl, act_fl,regularization)
+                
+            #Cost calculation
+            batch_Y_hat=cache['final activation']
+            cost=calc_cost(batch_Y,batch_Y_hat)
+                
+            if regu_type=="L2":
+                cost=cost+calc_frobenius_norm_of_weights(weights,lambd,m=batch_X.shape[1])
+                
+            #save cost value
+            cost_list.append(cost/n_k)
+            epoch_list.append(cur_epoch_no)
+            if cur_epoch_no % 100 == 0 and itn_no==0:
+                print("Cost after epoch {}: {}".format(cur_epoch_no, round(cost/n_k,3)))
+                #cost_list.append(cost/n_k)
+                #epoch_list.append(cur_epoch_no // 100)
+                
+            #Back prop
+            grads=back_prop(batch_Y,cache,act_hl, act_fl,regularization)
+            
+            # Update parameters
+            if optim_type=='momentum':
+                weights,v=update_weights_momentum(weights,grads,learn_rate,v,beta1)
+            elif optim_type=='adam':
+               weights,v,s=update_weights_adam(weights,grads,learn_rate, t_adam ,v,s,beta1,beta2)
+               t_adam+=1
+            else: # plain vanilla GD
+                weights=update_weights(weights,grads,learn_rate)
+                
+            itn_no+=1
+                
+        cur_epoch_no+=1
+    # plots    
     if regu_type!="dropout":    
         plt.figure(figsize=(5,5), dpi= 100, facecolor='w', edgecolor='k')    
         #iterations=list(range(0,len(cost_list)))    
             
-        plt.plot(itn_list,cost_list)
+        plt.plot(epoch_list,cost_list)
         plt.ylabel("J")
-        plt.xlabel("Iterations (x 100)")
-    return weights
+        plt.xlabel("Epochs (x 100)")
+    return weights, cost_list
 
 
 #%% Predict
@@ -437,11 +652,18 @@ def NN_model_predictions(weights,X,act_hl, act_fl,regularization):
     #       act_fl (refer function NN_model),
     #       regularization(refer function NN_model)
     #Output: Prediction matrix Y_hat (shape (1,m))
+    
     regularization=None
     cache=forward_prop(weights,X,act_hl, act_fl,regularization)
+    
+    
     Y_hat=cache['final activation']
-    Y_hat[Y_hat>0.5]=1
-    Y_hat[Y_hat<=0.5]=0
+    n_k=Y_hat.shape[0]
+    if n_k==1: # binary classification
+        Y_hat[Y_hat>0.5]=1
+        Y_hat[Y_hat<=0.5]=0
+    else:
+        Y_hat=np.argmax(Y_hat,axis=0).reshape((1,X.shape[1]))
     return Y_hat
 #%% Calculate accuracy of predictions
 def calc_accuracy(Y,Y_hat):
