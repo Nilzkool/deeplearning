@@ -1,6 +1,6 @@
 
 
-## Scrip to demonstrate L_layer_NN (Version 1.1) with a toy dataset for multiclass problem
+## Scrip to demonstrate L_layer_NN (Version 1.1) with a toy dataset for multiclass problem 
 # IMPORTANT: First download the library L_layer_NN 
 # 
 
