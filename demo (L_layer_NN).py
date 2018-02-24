@@ -6,14 +6,14 @@ Created on Sat Feb  3 14:09:01 2018
 """
 
 ## Scrip to demonstrate L_layer_NN (Version 1.2) with a toy dataset for multiclass problem
-# IMPORTANT: First download the library L_layer_NN 
+# IMPORTANT: First download the library L_layer_NN.py 
 
 #%% Import libraries
 import os # to change to your current working directory
 cur_dir=os.getcwd()
 os.chdir(cur_dir)
 import sys
-lib_dest='C:/Users/u0113548/Google Drive/Deeplearning course/Scripts' # This is the folder where you save L_layer_NN 
+lib_dest='C:/Users/u0113548/Google Drive/Deeplearning course/Scripts' # This is the folder where you save L_layer_NN.py 
 sys.path.insert(0,lib_dest)
 import L_layer_NN # Import the library
 from sklearn.model_selection import train_test_split 
