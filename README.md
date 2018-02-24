@@ -2,7 +2,7 @@
 Hello,
 
 This is a self written deep learning repository to gain a better understanding of deep learning. The first library is called  
-L_layer_NN which  is a set of functions to implement a L layered neural network (L includes input and output layers). The formulations of the matrices have been taken from the notes of Andrew Ng's awesome deeplearning course (https://www.deeplearning.ai/). I have also included  python scripts on how to use the library using toy datasets. I will keep on updating this library with additional features.   
+L_layer_NN which  is a set of functions to implement a L layered neural network (L includes input and output layers). Most of the formulations of the matrices have been taken from the notes of Andrew Ng's awesome deeplearning course (https://www.deeplearning.ai/). I have also included  python scripts on how to use the library using toy datasets. I will keep on updating this library with additional features.   
 
 Version history:
 
