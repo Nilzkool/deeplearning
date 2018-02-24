@@ -16,3 +16,6 @@ L_layer_NN (V1.1)
 - Implementation of mini batch gradient descent
 - Implementation of momentum and adam optimization
 
+L_layer_NN (V1.2)
+- Implemented softmax in the final layer
+- Implemented batch normalization
