@@ -1,4 +1,4 @@
-# NN library for binary classification problems 
+# NN library for multi classification problems 
 import numpy as np
 import matplotlib.pyplot as plt
 #%% A function to initialize parameters
